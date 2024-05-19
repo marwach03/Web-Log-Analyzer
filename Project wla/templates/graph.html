@@ -71,7 +71,10 @@
             <div>
                 <img src="data:image/png;base64,{{ graph_data_time_distribution }}" alt="Graph Time Distribution">
             </div>
-
+            <div class="referrers-section">
+                <h1>Top Referrer URLs</h1>
+               <img src="data:image/png;base64,{{ graph_url_refences }}" alt="graph_url_refences">
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">

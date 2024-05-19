@@ -342,6 +342,37 @@ class AccessDao:
             return []
         finally:
             cursor.close()
+    def fetch_top_referrers(self, limit=10):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT 
+                l.referrer, 
+                COUNT(*) AS referrer_count,
+                COUNT(DISTINCT l.ip) AS unique_visitors,
+                COUNT(*) AS total_hits
+                FROM 
+                    logs l
+                WHERE 
+                    l.referrer IS NOT NULL
+                GROUP BY 
+                    l.referrer
+                ORDER BY 
+                referrer_count DESC
+                LIMIT %s
+            '''
+            cursor.execute(query, (limit,))
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des URL référentes : {e}")
+            return []
+        finally:
+            cursor.close()
 
 
     

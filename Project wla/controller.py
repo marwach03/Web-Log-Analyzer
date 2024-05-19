@@ -12,7 +12,43 @@ def get_current_datetime():
     date_str = now.strftime("%d/%b/%Y")
     datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_str, datetime_str
+def generate_plotReferrerUrls(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    referrers = dao.fetch_top_referrers()
+    data = dao.fetch_unique_visitors_and_hits_per_day()  # Récupérer les données des visiteurs uniques et des hits
+    dao.disconnect()
 
+    if not referrers:
+        print("Aucune donnée disponible pour le graphe des URL référentes.")
+        return None, None
+
+    urls = [referrer[0] for referrer in referrers]
+    counts = [referrer[1] for referrer in referrers]
+
+    plt.figure(figsize=(7,3))
+    plt.barh(urls, counts, color='skyblue')
+    plt.xlabel('Nombre de fois')
+    plt.ylabel('URL référente')
+    plt.title('Top URL référentes')
+    plt.gca().invert_yaxis()  # Inverser l'ordre pour afficher les plus fréquentes en haut
+    
+    # Ajouter les annotations pour les visiteurs uniques et les hits
+    for entry, url in zip(data, urls):
+        unique_visitors = entry['unique_visitors']
+        total_hits = entry['total_hits']
+        plt.text(total_hits, url, f"Visitors: {unique_visitors}\nHits: {total_hits}", va='center')
+
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, urls
 def generate_plotVisitorsAndHits(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -125,7 +161,7 @@ def generate_plot_time_distribution(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'ikramBelhaj2003@',
         'database': 'webLog'
     }
 
@@ -148,7 +184,7 @@ def index():
     # Génération des graphiques
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
     graph_data_time_distribution = generate_plot_time_distribution(db_config)
-
+    graph_url_refences = generate_plotReferrerUrls(db_config)
     if not graph_data or  not graph_data_time_distribution:
         return "Aucune donnée disponible pour le graphique."
 
@@ -159,7 +195,7 @@ def index():
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,
-                           static_files_count=static_files_count, log_size=log_size)
+                           static_files_count=static_files_count, log_size=log_size,graph_url_refences=graph_url_refences)
 
 
 if __name__ == '__main__':
