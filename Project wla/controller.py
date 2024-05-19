@@ -56,7 +56,7 @@ def generate_plotVisitorsAndHits(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'abdellah2004.7',
+        'password': 'Ghitatagmouti2003',
         'database': 'webLog'
     }
 
@@ -69,6 +69,8 @@ def index():
     log_parsing_time = dao.fetch_log_parsing_time()
     unique_visitors_count = dao.fetch_unique_visitors_count()
     requested_files_count = dao.fetch_requested_files_count()
+    referrers_count = dao.fetch_referrers_count()
+    not_found_count = dao.fetch_not_found_count()
     dao.disconnect()
 
     # Génération du graphique
@@ -80,7 +82,8 @@ def index():
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
                            unique_visitors_count=unique_visitors_count, 
-                           requested_files_count=requested_files_count
+                           requested_files_count=requested_files_count,
+                           referrers_count=referrers_count, not_found_count=not_found_count
                            )
 
     

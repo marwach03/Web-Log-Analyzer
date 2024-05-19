@@ -190,5 +190,54 @@ class AccessDao:
             cursor.close()
 
     
+    def fetch_referrers_count(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT COUNT(DISTINCT referrer) AS referrers_count
+                FROM logs
+                WHERE referrer IS NOT NULL
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération du nombre de référents : {e}")
+            return -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
+
+    def fetch_not_found_count(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT COUNT(*) AS not_found_count
+                FROM logs
+                WHERE status = 404
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération du nombre de demandes 'Not Found' : {e}")
+            return -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
+
+    
 
 
