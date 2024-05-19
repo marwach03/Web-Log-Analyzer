@@ -285,6 +285,65 @@ class AccessDao:
         finally:
             cursor.close()
 
+    def fetch_browsers_and_stats(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = '''
+                SELECT 
+                    user_agent,
+                    COUNT(*) AS total_hits,
+                    COUNT(DISTINCT ip) AS unique_visitors
+                FROM 
+                    logs
+                GROUP BY 
+                    user_agent
+                ORDER BY 
+                    total_hits DESC
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des statistiques des navigateurs : {e}")
+            return []
+        finally:
+            cursor.close()
+
+    
+    def fetch_time_distribution(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT 
+                    date,
+                    COUNT(*) AS hits,
+                    COUNT(DISTINCT ip) AS visitors
+                FROM 
+                    logs
+                GROUP BY 
+                    date
+                ORDER BY 
+                    date
+
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération de la distribution dans le temps : {e}")
+            return []
+        finally:
+            cursor.close()
+
+
     
 
 

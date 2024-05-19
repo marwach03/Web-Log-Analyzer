@@ -52,6 +52,75 @@ def generate_plotVisitorsAndHits(db_config):
 
     return graph_data, dates
 
+
+def generate_plotBrowsers(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_browsers_and_stats()
+    dao.disconnect()
+
+    if not data:
+        print("Aucune donnée disponible pour le graphique des navigateurs.")
+        return None, None
+
+    user_agents = [entry['user_agent'] for entry in data]
+    total_hits = [entry['total_hits'] for entry in data]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.barh(user_agents, total_hits, color='c')
+    ax.set_xlabel('Total Hits')
+    ax.set_ylabel('User Agent')
+    ax.set_title('Total Hits by Browser/User Agent')
+    fig.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, user_agents
+
+def generate_plot_time_distribution(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_time_distribution()
+    dao.disconnect()
+
+    if not data:
+        print("Aucune donnée disponible pour le graphique de distribution dans le temps.")
+        return None
+
+    dates = [entry[0] for entry in data]
+    visitors = [entry[1] for entry in data]
+    hits = [entry[2] for entry in data]
+
+    plt.figure(figsize=(7, 3))
+
+    # Tracer les visiteurs en bleu
+    plt.plot(dates, visitors, marker='o', color='b', label='Visiteurs')
+
+    # Tracer les hits en rouge
+    plt.plot(dates, hits, marker='s', color='r', label='Hits')
+
+    plt.xlabel('Date')
+    plt.ylabel('Nombre')
+    plt.title('Distribution dans le temps')
+    plt.xticks(rotation=45)
+    plt.legend()  # Ajouter une légende pour distinguer les deux séries
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data
+
 @app.route('/')
 def index():
     db_config = {
@@ -76,12 +145,15 @@ def index():
    
     dao.disconnect()
 
-    # Génération du graphique
+    # Génération des graphiques
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
-    if not graph_data:
+    graph_data_time_distribution = generate_plot_time_distribution(db_config)
+
+    if not graph_data or  not graph_data_time_distribution:
         return "Aucune donnée disponible pour le graphique."
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
+                           graph_data_time_distribution=graph_data_time_distribution,
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
                            unique_visitors_count=unique_visitors_count, 
@@ -89,7 +161,6 @@ def index():
                            referrers_count=referrers_count, not_found_count=not_found_count,
                            static_files_count=static_files_count, log_size=log_size)
 
-    
 
 if __name__ == '__main__':
     app.run(debug=True)
