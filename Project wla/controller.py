@@ -54,18 +54,29 @@ def generate_plotVisitorsAndHits(db_config):
 
 @app.route('/')
 def index():
-    today, last_updated = get_current_datetime()
     db_config = {
         'user': 'root',
-        'password': 'abdellah2004.7',
+        'password': 'marwachaoui2003@',
         'database': 'webLog'
     }
 
+    # Récupération des statistiques
+    dao = AccessDao(db_config)
+    dao.connect()
+    total_requests = dao.fetch_total_requests()
+    valid_requests = dao.fetch_valid_requests()
+    failed_requests = dao.fetch_failed_requests()
+    log_parsing_time = dao.fetch_log_parsing_time()
+    dao.disconnect()
+
+    # Génération du graphique
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
     if not graph_data:
-        return "Aucune donnee disponible pour le graphique."
+        return "Aucune donnée disponible pour le graphique."
 
-    return render_template('graph.html',today=today, graph_data=graph_data, dates=dates)
+    return render_template('graph.html', graph_data=graph_data, dates=dates,
+                           total_requests=total_requests, valid_requests=valid_requests,
+                           failed_requests=failed_requests, log_parsing_time=log_parsing_time)
     
 
 if __name__ == '__main__':
