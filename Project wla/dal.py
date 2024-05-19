@@ -9,20 +9,20 @@ class AccessDao:
     def connect(self):
         try:
             self.connection = mysql.connector.connect(**self.db_config)
-            print("Connexion à la base de données réussie")
+            print("Connexion a la base de donnees reussie")
         except Error as e:
-            print(f"Erreur de connexion à la base de données: {e}")
+            print(f"Erreur de connexion à la base de donnees: {e}")
             self.connection = None
 
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            print("Déconnexion de la base de données réussie")
+            print("Deconnexion de la base de donnees reussie")
     
     
     def fetch_unique_visitors_and_hits_per_day(self):
         if not self.connection:
-            print("Pas de connexion à la base de données")
+            print("Pas de connexion a la base de donnees")
             return []
 
         try:
@@ -43,7 +43,7 @@ class AccessDao:
             results = cursor.fetchall()
             return results
         except Error as e:
-            print(f"Erreur lors de la récupération des visiteurs uniques et des hits par jour: {e}")
+            print(f"Erreur lors de la recuperation des visiteurs uniques et des hits par jour: {e}")
             return []
         finally:
             cursor.close()
