@@ -142,6 +142,53 @@ class AccessDao:
         finally:
             cursor.close()
 
+
+    def fetch_unique_visitors_count(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT COUNT(DISTINCT ip) AS unique_visitors_count
+                FROM logs
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération du nombre de visiteurs uniques : {e}")
+            return -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
+
+    def fetch_requested_files_count(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT COUNT(DISTINCT url) AS requested_files_count
+                FROM logs
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération du nombre de fichiers demandés : {e}")
+            return -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
+
     
 
 
