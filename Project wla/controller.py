@@ -12,6 +12,49 @@ def get_current_datetime():
     date_str = now.strftime("%d/%b/%Y")
     datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_str, datetime_str
+
+def generate_plot_static_requests(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_top_static_requests()
+    dao.disconnect()
+
+    if not data:
+        print("Aucune donnée disponible pour le graphique.")
+        return None, None
+
+    requests = [entry['request'] for entry in data]
+    hits = [entry['hits'] for entry in data]
+    visitors = [entry['visitors'] for entry in data]
+
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+
+    # Barres pour les visiteurs (à gauche)
+    ax1.bar(requests, visitors, color='b', label='Visitors')
+    ax1.set_xlabel('Request')
+    ax1.set_ylabel('Visitors', color='b')
+    ax1.tick_params(axis='y', labelcolor='b')
+    ax1.set_xticklabels(requests, rotation=90)
+
+    # Barres pour les hits (à droite)
+    ax2 = ax1.twinx()
+    ax2.bar(requests, hits, color='r', label='Hits')
+    ax2.set_ylabel('Hits', color='r')
+    ax2.tick_params(axis='y', labelcolor='r')
+
+    plt.title('Top Static Requests Sorted by Hits and Visitors')
+    fig.tight_layout()
+    fig.legend(loc='upper left')
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, requests
+
 def generate_plotReferrerUrls(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -161,7 +204,7 @@ def generate_plot_time_distribution(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'ikramBelhaj2003@',
+        'password': 'Ghitatagmouti2003',
         'database': 'webLog'
     }
 
@@ -182,13 +225,21 @@ def index():
     dao.disconnect()
 
     # Génération des graphiques
+    graph_data_visitors, dates = generate_plotVisitorsAndHits(db_config)
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
     graph_data_time_distribution = generate_plot_time_distribution(db_config)
     graph_url_refences = generate_plotReferrerUrls(db_config)
     if not graph_data or  not graph_data_time_distribution:
         return "Aucune donnée disponible pour le graphique."
+    
+    graph_data_static_requests, requests = generate_plot_static_requests(db_config)
+    if not graph_data_static_requests:
+        return "Aucune donnée disponible pour le graphique des requêtes statiques."
+
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
+                           graph_data_static_requests=graph_data_static_requests,
+                           requests=requests,
                            graph_data_time_distribution=graph_data_time_distribution,
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,

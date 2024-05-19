@@ -19,7 +19,35 @@ class AccessDao:
             self.connection.close()
             print("Deconnexion de la base de donnees reussie")
     
-    
+    def fetch_top_static_requests(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = '''
+                SELECT 
+                    CONCAT(method, ' ', url, ' ', protocol) AS request,
+                    COUNT(*) AS hits,
+                    COUNT(DISTINCT ip) AS visitors  # Ajout de la colonne pour les visiteurs
+                FROM 
+                    logs
+                GROUP BY 
+                    request
+                ORDER BY 
+                    hits DESC
+                LIMIT 10
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des demandes statiques: {e}")
+            return []
+        finally:
+            cursor.close()
+
     def fetch_unique_visitors_and_hits_per_day(self):
         if not self.connection:
             print("Pas de connexion a la base de donnees")
