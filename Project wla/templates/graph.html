@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Dashboard</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+    
+
+    <div class="panel">
+        <div class="head">
+            <div class="image-container">
+                <img src="../img/25703.png" alt="imgdashboard" class="resized-image">
+            </div>
+            <h1 class="titre1">Dashboard</h1>
+        </div>
+        <div class="panelBody">
+            <span>OVERALL ANALYZED REQUESTS</span>
+            <span class="intervalDate">12/MAY/2024 _ {{ today }}</span>
+            <div class="update">
+                <span>Last Updated : {{ last_updated }}</span>
+            </div>
+
+            
+            <div class="stats">
+                <div class="stat1">
+                    <span>Total Requests</span>
+                    <span>{{ total_requests }}</span>
+                </div>
+                <div class="stat2">
+                    <span>Valid Requests</span>
+                    <span>{{ valid_requests }}</span>
+                </div>
+                <div class="stat3">
+                    <span>Failed Requests</span>
+                    <span>{{ failed_requests }}</span>
+                </div>
+                <div class="stat4">
+                    <span>Unique Visitors</span>
+                    <span>{{ unique_visitors }}</span>
+                </div>
+                <div class="stat5">
+                    <span>Requested Files</span>
+                    <span>{{ requested_files }}</span>
+                </div>
+            </div>
+            
+        </div>
+        <div class="navbar">
+            <img src="../img/iconeMenu.png" alt="Menu Icon" class="menu-icon" id="menu-icon">
+            <img src="../img/paraIcone.png" class="para-icon" id="para-icon">
+            <ul class="menu" id="menu">
+                <li><a href="#">UNIQUE VISITORS PER DAY - INCLUDING SPIDERS</a></li>
+                <li><a href="#">OVERALL ANALYZED REQUESTS</a></li>
+                <li><a href="#">REQUESTED FILES (URLS)</a></li>
+                <li><a href="#">STATIC REQUESTS</a></li>
+                <li><a href="#">NOT FOUND URLS</a></li>
+                <li><a href="#">VISITOR HOSTNAMES AND IPS</a></li>
+                <li><a href="#">GEO LOCATION</a></li>
+                <li><a href="#">HTTP STATUS CODES</a></li>
+                <li><a href="#">OPERATING SYSTEMS</a></li>
+                <li><a href="#">BROWSERS</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="visitsChart"></canvas>
+    </div>
+
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
