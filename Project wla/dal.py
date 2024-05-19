@@ -237,6 +237,53 @@ class AccessDao:
             return -1  # Valeur par défaut pour indiquer une erreur
         finally:
             cursor.close()
+    def fetch_static_files_count(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT COUNT(*) AS static_files_count
+                FROM logs
+                WHERE url LIKE '%.css' OR url LIKE '%.js' OR url LIKE '%.jpg' OR url LIKE '%.png' OR url LIKE '%.gif'
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            else:
+                return 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération du nombre de fichiers statiques : {e}")
+            return -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
+    def fetch_log_size(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return -1  # Valeur par défaut pour indiquer une erreur
+
+        try:
+            cursor = self.connection.cursor()
+            query = '''
+                SELECT SUM(size) AS total_log_size
+                FROM logs
+            '''
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                total_size_bytes = result[0]
+                total_size_mb = total_size_bytes / (1024 * 1024)  # Convertir en MiB
+                return total_size_mb
+            else:
+                return 0, 0  # Aucune donnée trouvée
+        except Error as e:
+            print(f"Erreur lors de la récupération de la taille totale des logs : {e}")
+            return -1, -1  # Valeur par défaut pour indiquer une erreur
+        finally:
+            cursor.close()
 
     
 
