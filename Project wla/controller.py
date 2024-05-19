@@ -13,7 +13,6 @@ def get_current_datetime():
     datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_str, datetime_str
 
-# Fonction pour générer le graphique et renvoyer les données pour l'afficher dans le modèle HTML
 def generate_plotVisitorsAndHits(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -29,27 +28,22 @@ def generate_plotVisitorsAndHits(db_config):
     unique_visitors = [entry['unique_visitors'] for entry in data]
     total_hits = [entry['total_hits'] for entry in data]
 
-    # Création de la figure et des axes
     fig, ax1 = plt.subplots(figsize=(10, 5))
 
-    # Plot pour les visiteurs uniques
     ax1.plot(dates, unique_visitors, marker='o', color='b', label='Unique Visitors')
     ax1.set_xlabel('Date')
     ax1.set_ylabel('Unique Visitors', color='b')
 
-    # Créer un deuxième axe pour les hits totaux
     ax2 = ax1.twinx()
     ax2.plot(dates, total_hits, marker='s', color='r', label='Total Hits')
     ax2.set_ylabel('Total Hits', color='r')
     ax2.tick_params('y', colors='r')
 
-    # Configuration du titre et de la légende
     plt.title('Unique Visitors and Total Hits Per Day')
     fig.tight_layout()
     fig.autofmt_xdate(rotation=45)
     fig.legend(loc='upper left')
 
-    # Convertir le graphique en base64 pour l'afficher dans le modèle HTML
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
@@ -58,9 +52,6 @@ def generate_plotVisitorsAndHits(db_config):
 
     return graph_data, dates
 
-
-
-# Route pour afficher le graphique
 @app.route('/')
 def index():
     today, last_updated = get_current_datetime()
