@@ -56,7 +56,7 @@ def generate_plotVisitorsAndHits(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'ikramBelhaj2003@',
+        'password': 'marwachaoui2003@',
         'database': 'webLog'
     }
 
@@ -87,8 +87,7 @@ def index():
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,
-                           static_files_count=static_files_count, log_size=log_size
-                           )
+                           static_files_count=static_files_count, log_size=log_size)
 
     
 

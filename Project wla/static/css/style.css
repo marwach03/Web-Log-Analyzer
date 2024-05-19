@@ -9,7 +9,7 @@ body {
     color: #fff;
     display: flex;
     flex-direction: column; 
-    margin-top: -780px;
+    margin-top: -930px;
     align-items: flex-start; 
     width: 70px; 
     height: 700px; 
@@ -152,14 +152,112 @@ body {
     border-top: 5px solid #000;
 }
 
+.stat6 {
+    display: inline-block;
+    margin-right: 20px;
+    width: 250px;
+    padding: 10px;
+    margin-top: 60px;
+    text-align: center;
+    background-color: white;
+    border-top: 5px solid #000;
+}
+
 .stat span:first-child {
     font-size: 14px;
     font-weight: bold;
-    color: #555;
+    color: black;
+    display: block;
 }
+
 
 .stat span:last-child {
     font-size: 18px;
     font-weight: bold;
     color: #000;
+    display: block;
+}
+
+.stat1 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat1 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+.stat2 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat2 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+.stat3 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat3 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+.stat4 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat4 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+.stat5 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat5 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
+}
+
+.stat6 span:first-child {
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    display: block;
+}
+
+
+.stat6 span:last-child {
+    font-size: 18px;
+    color: black;
+    display: block;
 }

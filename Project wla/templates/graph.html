@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Dashboard</title>
-    <link rel="stylesheet" href="../static/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../static/js/script.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    
-
     <div class="panel">
         <div class="head">
             <div class="image-container">
-                <img src="../img/25703.png" alt="imgdashboard" class="resized-image">
+                <img src="{{ url_for('static', filename='img/25703.png') }}" alt="imgdashboard" class="resized-image">
             </div>
             <h1 class="titre1">Dashboard</h1>
         </div>
@@ -24,9 +20,6 @@
             <div class="update">
                 <span>Last Updated : {{ last_updated }}</span>
             </div>
-
-
-            
             <div class="stats">
                 <div class="stat1">
                     <span>Total Requests</span>
@@ -50,7 +43,7 @@
                 </div>
                 <div class="stat5">
                     <span>Requested Files Count</span>
-                    <span>{{ requested_files_count }}</span>
+                    <span>{{ requested_files_count }}</span>
                 </div>
                 <div class="stat5">
                     <span>Referrers Count</span>
@@ -64,20 +57,19 @@
                     <span>Static Files Count</span>
                     <span>{{ static_files_count }}</span>
                 </div>
-                <div class="stat5">
+                <div class="stat6">
                     <span>Log Size</span>
                     <span>{{ log_size }} MiB</span>
                 </div>
             </div>
-            
             <h1>Unique Visitors and Total Hits Per Day</h1>
             <div>
                 <img src="data:image/png;base64,{{ graph_data }}" alt="Graph">
             </div>
         </div>
         <div class="navbar">
-            <img src="../img/iconeMenu.png" alt="Menu Icon" class="menu-icon" id="menu-icon">
-            <img src="../img/paraIcone.png" class="para-icon" id="para-icon">
+            <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">
+            <img src="{{ url_for('static', filename='img/paraIcone.png') }}" class="para-icon" id="para-icon">
             <ul class="menu" id="menu">
                 <li><a href="#">UNIQUE VISITORS PER DAY - INCLUDING SPIDERS</a></li>
                 <li><a href="#">OVERALL ANALYZED REQUESTS</a></li>
@@ -92,12 +84,9 @@
             </ul>
         </div>
     </div>
-    
     <div class="chart-container">
         <canvas id="visitsChart"></canvas>
     </div>
-
-    
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
