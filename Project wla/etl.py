@@ -83,7 +83,7 @@ if __name__ == "__main__":
     log_file_path = './apache/var/log/httpd/access_log'  # Chemin vers votre fichier de journal
     db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'abdellah2004.7',
         'database': 'webLog'
     }
 
@@ -92,4 +92,4 @@ if __name__ == "__main__":
     parsed_logs = transform(logs)
     load(parsed_logs, db_config)
 
-    print('Les journaux transformés ont été enregistrés dans la base de données.')
+    print('Les journaux transformes ont ete enregistres dans la base de donnees.')

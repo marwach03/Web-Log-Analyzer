@@ -21,7 +21,7 @@ def generate_plotVisitorsAndHits(db_config):
     dao.disconnect()
 
     if not data:
-        print("Aucune donnée disponible pour le graphique.")
+        print("Aucune donnee disponible pour le graphique.")
         return None, None
 
     dates = [entry['log_date'] for entry in data]
@@ -57,13 +57,13 @@ def index():
     today, last_updated = get_current_datetime()
     db_config = {
         'user': 'root',
-        'password': 'Ghitatagmouti2003',
+        'password': 'abdellah2004.7',
         'database': 'webLog'
     }
 
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
     if not graph_data:
-        return "Aucune donnée disponible pour le graphique."
+        return "Aucune donnee disponible pour le graphique."
 
     return render_template('graph.html',today=today, graph_data=graph_data, dates=dates)
     
