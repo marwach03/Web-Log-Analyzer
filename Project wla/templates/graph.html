@@ -122,6 +122,10 @@
                 <h2>Nombre de fois qu'un ip a dépassé le nombre maximum de connections  </h2>
                 <img src="data:image/png;base64,{{ graph_data_ip_exceeding_connections }}" alt="Graphe Nombre de fois qu'un ip a dépassé le nombre maximum de connections ">
             </div>
+            <div>
+                <h2>Nombre de tentative de connection échouées par ip</h2>
+                <img src="data:image/png;base64,{{ graph_data_failed_login_attemptsIP }}" alt="Graphe tentative de connection échouées par ip">
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">

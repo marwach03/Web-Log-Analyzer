@@ -516,12 +516,51 @@ def generate_plot_ip_exceeding_connections(db_config):
 
     return graph_data
 
+def generate_plot_failed_login_attempts_by_ip(db_config):
+    ssh_log_dao = SSHLogDAO(db_config)
+    results = ssh_log_dao.get_failed_login_attempts_by_ip()
+
+    if not results:
+        print("Aucune donnée disponible pour le graphique des tentatives de connexion échouées par IP.")
+        return None
+
+    # Dictionnaire pour stocker les groupes d'adresses IP
+    ip_groups = {}
+    for ip, attempts in results:
+        ip_first_part = ip.split('.')[0]  # Première partie de l'adresse IP
+        if ip_first_part not in ip_groups:
+            ip_groups[ip_first_part] = attempts  # Crée un nouveau groupe avec la première tentative
+        else:
+            ip_groups[ip_first_part] += attempts  # Ajoute le nombre de tentatives au groupe existant
+
+    # Sélectionner seulement la moitié des adresses IP disponibles
+    selected_ips = dict(list(ip_groups.items())[:len(ip_groups) // 2])
+
+    ip_addresses = list(selected_ips.keys())  # Liste des premières parties des adresses IP
+    failed_attempts = list(selected_ips.values())  # Liste du nombre total de tentatives échouées pour chaque groupe
+
+    plt.figure(figsize=(10, 5))
+    plt.bar(ip_addresses, failed_attempts, color='r')
+    plt.xlabel('Adresse IP (1ère partie)')
+    plt.ylabel('Nombre de tentatives échouées')
+    plt.title('Tentatives de connexion échouées par groupe d\'adresse IP')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data
+
 
 @app.route('/')
 def index():
     db_config = {
         'user': 'root',
-        'password': 'abdellah2004.7',
+        'password': 'Ghitatagmouti2003',
         'database': 'webLog'
     }
 
@@ -551,6 +590,7 @@ def index():
     graph_data_failed_login_attempts_perHour = generate_plot_failed_login_attempts_per_Hour(db_config)
     graph_data_failed_login_attempts_perMounth = generate_plot_failed_login_attempts_per_Mounth(db_config)
     graph_data_ip_exceeding_connections=generate_plot_ip_exceeding_connections(db_config)
+    graph_data_failed_login_attemptsIP = generate_plot_failed_login_attempts_by_ip(db_config)
     
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category or not graph_data_ip_exceeding_connections:
         return "Aucune donnée disponible pour le graphique."
@@ -565,6 +605,7 @@ def index():
                            status_codes_by_category=status_codes_by_category,
                            graph_data_failed_login_attempts=graph_data_failed_login_attempts,
                            graph_data_failed_login_attempts_perHour = graph_data_failed_login_attempts_perHour,
+                           graph_data_failed_login_attemptsIP=graph_data_failed_login_attemptsIP,
                            graph_data_failed_login_attempts_perMounth = graph_data_failed_login_attempts_perMounth,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,

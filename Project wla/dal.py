@@ -559,7 +559,7 @@ class SSHLogDAO:
         self.conn = mysql.connector.connect(**self.db_config)
         self.cursor = self.conn.cursor()
 
-    def close(self):
+    def disconnect(self):
         self.cursor.close()
         self.conn.close()
 
@@ -574,7 +574,7 @@ class SSHLogDAO:
         self.connect()
         self.cursor.execute(query)
         results = self.cursor.fetchall()
-        self.close()
+        self.disconnect()
         return results
     def get_failed_login_attempts_by_Hour(self):
         query = '''
@@ -588,8 +588,9 @@ class SSHLogDAO:
         self.connect()
         self.cursor.execute(query)
         results = self.cursor.fetchall()
-        self.close()
+        self.disconnect()
         return results
+    
     def get_failed_login_attempts_by_Mounth(self):
         query = '''
          SELECT DATE_FORMAT(date, '%Y-%m ') AS log_Mounth,
@@ -602,7 +603,7 @@ class SSHLogDAO:
         self.connect()
         self.cursor.execute(query)
         results = self.cursor.fetchall()
-        self.close()
+        self.disconnect()
         return results
 
     def get_ips_exceeding_max_connections(self):
@@ -633,12 +634,26 @@ class SSHLogDAO:
                 if ip is not None:
                     formatted_results.append({'ip': ip, 'connection_attempts': connection_attempts})
 
-            self.close()
+            self.disconnect()
 
             return formatted_results
         except Error as e:
             print(f"Erreur lors de la récupération des données: {e}")
         return []
+    
+    def get_failed_login_attempts_by_ip(self):
+        query = '''
+            SELECT ip, COUNT(*) as failed_attempts
+            FROM ssh_logs
+            WHERE message LIKE '%Failed password%'
+            GROUP BY ip
+            ORDER BY failed_attempts DESC;
+        '''
+        self.connect()
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        self.disconnect()
+        return results
 
 
 if __name__ == "__main__":
