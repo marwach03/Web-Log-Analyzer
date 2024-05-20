@@ -607,7 +607,7 @@ class SSHLogDAO:
 
     def get_ips_exceeding_max_connections(self):
         try:
-            # Requête SQL pour récupérer les IPs dépassant le nombre maximum de connexions (10)
+            
             query = '''
                     SELECT 
                         ip,
@@ -625,11 +625,11 @@ class SSHLogDAO:
             self.cursor.execute(query)
             results = self.cursor.fetchall()
 
-            # Formatage des résultats en une liste de dictionnaires
+           
             formatted_results = []
             for row in results:
                 ip = row[0]
-                connection_attempts = int(row[1])  # Assurez-vous que connection_attempts est un entier
+                connection_attempts = int(row[1])  
                 if ip is not None:
                     formatted_results.append({'ip': ip, 'connection_attempts': connection_attempts})
 
