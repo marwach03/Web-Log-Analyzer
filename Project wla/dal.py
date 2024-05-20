@@ -576,7 +576,22 @@ class SSHLogDAO:
         results = self.cursor.fetchall()
         self.close()
         return results
+    def get_failed_login_attempts_by_Hour(self):
+        query = '''
+         SELECT DATE_FORMAT(date, ' %H:00:00') AS log_hour,
+        COUNT(*) AS failed_attempts
+        FROM ssh_logs
+        WHERE message LIKE '%Failed password%'
+        GROUP BY log_hour
+        ORDER BY log_hour;
+    '''
+        self.connect()
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        self.close()
+        return results
     
+
 
 if __name__ == "__main__":
     """ db_config = {
