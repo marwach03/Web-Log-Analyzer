@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from dal import AccessDao
+from dal import AccessDao  # Assuming dal.py contains the AccessDao class for database access
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -21,7 +21,7 @@ def generate_plot_static_requests(db_config):
     dao.disconnect()
 
     if not data:
-        print("Aucune donnée disponible pour le graphique.")
+        print("Aucune donnée disponible pour le graphique des requêtes statiques.")
         return None, None
 
     requests = [entry['request'] for entry in data]
@@ -30,14 +30,12 @@ def generate_plot_static_requests(db_config):
 
     fig, ax1 = plt.subplots(figsize=(10, 7))
 
-    # Barres pour les visiteurs (à gauche)
     ax1.bar(requests, visitors, color='b', label='Visitors')
     ax1.set_xlabel('Request')
     ax1.set_ylabel('Visitors', color='b')
     ax1.tick_params(axis='y', labelcolor='b')
     ax1.set_xticklabels(requests, rotation=90)
 
-    # Barres pour les hits (à droite)
     ax2 = ax1.twinx()
     ax2.bar(requests, hits, color='r', label='Hits')
     ax2.set_ylabel('Hits', color='r')
@@ -60,7 +58,7 @@ def generate_plotReferrerUrls(db_config):
     dao.connect()
     
     referrers = dao.fetch_top_referrers()
-    data = dao.fetch_unique_visitors_and_hits_per_day()  # Récupérer les données des visiteurs uniques et des hits
+    data = dao.fetch_unique_visitors_and_hits_per_day()
     dao.disconnect()
 
     if not referrers:
@@ -70,14 +68,13 @@ def generate_plotReferrerUrls(db_config):
     urls = [referrer[0] for referrer in referrers]
     counts = [referrer[1] for referrer in referrers]
 
-    plt.figure(figsize=(7,3))
+    plt.figure(figsize=(10, 5))
     plt.barh(urls, counts, color='skyblue')
     plt.xlabel('Nombre de fois')
     plt.ylabel('URL référente')
     plt.title('Top URL référentes')
-    plt.gca().invert_yaxis()  # Inverser l'ordre pour afficher les plus fréquentes en haut
-    
-    # Ajouter les annotations pour les visiteurs uniques et les hits
+    plt.gca().invert_yaxis()
+
     for entry, url in zip(data, urls):
         unique_visitors = entry['unique_visitors']
         total_hits = entry['total_hits']
@@ -92,6 +89,7 @@ def generate_plotReferrerUrls(db_config):
     plt.close()
 
     return graph_data, urls
+
 def generate_plotVisitorsAndHits(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -100,7 +98,7 @@ def generate_plotVisitorsAndHits(db_config):
     dao.disconnect()
 
     if not data:
-        print("Aucune donnee disponible pour le graphique.")
+        print("Aucune donnée disponible pour le graphique des visiteurs et hits.")
         return None, None
 
     dates = [entry['log_date'] for entry in data]
@@ -130,7 +128,6 @@ def generate_plotVisitorsAndHits(db_config):
     plt.close()
 
     return graph_data, dates
-
 
 def generate_plotBrowsers(db_config):
     dao = AccessDao(db_config)
@@ -177,19 +174,16 @@ def generate_plot_time_distribution(db_config):
     visitors = [entry[1] for entry in data]
     hits = [entry[2] for entry in data]
 
-    plt.figure(figsize=(7, 3))
+    plt.figure(figsize=(10, 5))
 
-    # Tracer les visiteurs en bleu
     plt.plot(dates, visitors, marker='o', color='b', label='Visiteurs')
-
-    # Tracer les hits en rouge
     plt.plot(dates, hits, marker='s', color='r', label='Hits')
 
     plt.xlabel('Date')
     plt.ylabel('Nombre')
     plt.title('Distribution dans le temps')
     plt.xticks(rotation=45)
-    plt.legend()  # Ajouter une légende pour distinguer les deux séries
+    plt.legend()
     plt.tight_layout()
 
     buffer = io.BytesIO()
@@ -204,11 +198,10 @@ def generate_plot_time_distribution(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'Ghitatagmouti2003',
+        'password': 'ikramBelhaj2003@',
         'database': 'webLog'
     }
 
-    # Récupération des statistiques
     dao = AccessDao(db_config)
     dao.connect()
     total_requests = dao.fetch_total_requests()
@@ -221,33 +214,26 @@ def index():
     not_found_count = dao.fetch_not_found_count()
     static_files_count = dao.fetch_static_files_count()
     log_size = dao.fetch_log_size()
-   
     dao.disconnect()
 
-    # Génération des graphiques
-    graph_data_visitors, dates = generate_plotVisitorsAndHits(db_config)
     graph_data, dates = generate_plotVisitorsAndHits(db_config)
     graph_data_time_distribution = generate_plot_time_distribution(db_config)
-    graph_url_refences = generate_plotReferrerUrls(db_config)
-    if not graph_data or  not graph_data_time_distribution:
-        return "Aucune donnée disponible pour le graphique."
-    
+    graph_url_refences, urls = generate_plotReferrerUrls(db_config)
     graph_data_static_requests, requests = generate_plot_static_requests(db_config)
-    if not graph_data_static_requests:
-        return "Aucune donnée disponible pour le graphique des requêtes statiques."
 
+    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences:
+        return "Aucune donnée disponible pour le graphique."
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
                            graph_data_static_requests=graph_data_static_requests,
-                           requests=requests,
-                           graph_data_time_distribution=graph_data_time_distribution,
+                           requests=requests, graph_data_time_distribution=graph_data_time_distribution,
+                           graph_url_refences=graph_url_refences, urls=urls,
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,
-                           static_files_count=static_files_count, log_size=log_size,graph_url_refences=graph_url_refences)
-
+                           static_files_count=static_files_count, log_size=log_size)
 
 if __name__ == '__main__':
     app.run(debug=True)
