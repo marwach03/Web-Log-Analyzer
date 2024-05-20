@@ -118,11 +118,11 @@
                 <h2>Nombre de tentative de connection échouées par Mois</h2>
                 <img src="data:image/png;base64,{{ graph_data_failed_login_attempts_perMounth }}" alt="Graphe tentative de connection échouées par Mois">
             </div>
-            <div>
+            <div id="max-connections">
                 <h2>Nombre de fois qu'un ip a dépassé le nombre maximum de connections  </h2>
                 <img src="data:image/png;base64,{{ graph_data_ip_exceeding_connections }}" alt="Graphe Nombre de fois qu'un ip a dépassé le nombre maximum de connections ">
             </div>
-            <div>
+            <div id="failed-connection-ip">
                 <h2>Nombre de tentative de connection échouées par ip</h2>
                 <img src="data:image/png;base64,{{ graph_data_failed_login_attemptsIP }}" alt="Graphe tentative de connection échouées par ip">
             </div>
@@ -144,6 +144,8 @@
                 <li><a href="#failed-connection-period">FAILLED CONNECTION PER PERIOD</a></li>
                 <li><a href="#failed-connection-hour">FAILLED TENTATIVE CONNECTION PER HOUR</a></li>
                 <li><a href="#failed-connection-Mounth">FAILED TENTATIVE CONNECTION PER MONTH</a></li>
+                <li><a href="#max-connections">Graphe Nombre de fois qu'un ip a dépassé le nombre maximum de connections</a></li>
+                <li><a href="#failed-connection-ip">Graphe tentative de connection échouées par ip</a></li>
             </ul>
         </div>
     </div>
