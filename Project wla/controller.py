@@ -476,6 +476,47 @@ def generate_plot_failed_login_attempts_per_Mounth(db_config):
     plt.close()
 
     return graph_data
+
+
+def generate_plot_ip_exceeding_connections(db_config):
+    ssh_log_dao = SSHLogDAO(db_config)
+    ssh_log_dao.connect()
+    
+    results = ssh_log_dao.get_ips_exceeding_max_connections()
+    
+    if not results:
+        print("Aucune donnée disponible pour le graphique des IPs dépassant le nombre maximum de connexions.")
+        return None
+
+    ips = []
+    connection_attempts = []
+
+    for result in results:
+        if 'ip' in result and 'connection_attempts' in result:
+            ips.append(result['ip'])
+            connection_attempts.append(int(result['connection_attempts']))
+        else:
+            print("Clés ou valeurs manquantes dans les résultats.")
+            return None
+
+    # Tracé du graphique
+    plt.figure(figsize=(10, 5))
+    plt.bar(ips, connection_attempts, color='b')
+    plt.xlabel('IP')
+    plt.ylabel('Nombre de tentatives de connexion')
+    plt.title('IPs dépassant 10000 tentatives de connexion')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data
+
+
 @app.route('/')
 def index():
     db_config = {
@@ -509,7 +550,9 @@ def index():
     graph_data_failed_login_attempts = generate_plot_failed_login_attempts(db_config)
     graph_data_failed_login_attempts_perHour = generate_plot_failed_login_attempts_per_Hour(db_config)
     graph_data_failed_login_attempts_perMounth = generate_plot_failed_login_attempts_per_Mounth(db_config)
-    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category:
+    graph_data_ip_exceeding_connections=generate_plot_ip_exceeding_connections(db_config)
+    
+    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category or not graph_data_ip_exceeding_connections:
         return "Aucune donnée disponible pour le graphique."
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
@@ -525,6 +568,7 @@ def index():
                            graph_data_failed_login_attempts_perMounth = graph_data_failed_login_attempts_perMounth,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
+                            graph_data_ip_exceeding_connections=graph_data_ip_exceeding_connections,
                            referrers_count=referrers_count, not_found_count=not_found_count,
                            static_files_count=static_files_count, log_size=log_size,
                             requested_files_graph_data=requested_files_graph_data,
