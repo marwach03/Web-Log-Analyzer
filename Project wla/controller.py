@@ -480,7 +480,7 @@ def generate_plot_failed_login_attempts_per_Mounth(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'ikramBelhaj2003@',
         'database': 'webLog'
     }
 
