@@ -69,6 +69,64 @@ def generate_plot_requested_files(db_config):
     plt.close()
 
     return graph_data, requests
+
+def generate_plot_http_status_codes_by_category(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_http_status_codes_by_category()
+    dao.disconnect()
+
+    if not data:
+        print("Aucune donnée disponible pour le graphique des codes de statut HTTP.")
+        return None, None
+
+    categories = [entry['category'] for entry in data]
+    hits = [entry['hits'] for entry in data]
+    visitors = [entry['visitors'] for entry in data]
+
+    fig, ax1 = plt.subplots(figsize=(10, 5))
+
+    # Largeur des barres
+    bar_width = 0.35
+
+    # Positions des barres pour les hits
+    bar_positions_hits = np.arange(len(categories))
+
+    # Barres pour les hits (en rouge)
+    ax1.bar(bar_positions_hits, hits, bar_width, color='r', label='Hits')
+    ax1.set_xlabel('Catégorie de code de statut HTTP')
+    ax1.set_ylabel('Nombre de hits', color='r')
+    ax1.tick_params(axis='y', labelcolor='r')
+
+    # Création d'un deuxième axe y pour les visiteurs
+    ax2 = ax1.twinx()
+    ax2.bar(bar_positions_hits + bar_width, visitors, bar_width, color='b', label='Visitors')
+    ax2.set_ylabel('Nombre de visiteurs', color='b')
+    ax2.tick_params(axis='y', labelcolor='b')
+
+    # Ajout de la légende
+    fig.legend(loc='upper right')
+
+    plt.title('Répartition des codes de statut HTTP par catégorie')
+
+    # Ajout des graduations en bas
+    plt.xticks(bar_positions_hits + bar_width / 2, categories)
+
+    # Ajustement automatique des marges
+    fig.tight_layout()
+
+    # Sauvegarde du graphique dans un buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, categories
+
+
+
 def generate_plot_static_requests(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -363,9 +421,9 @@ def index():
     graph_data_not_found = generate_plot_not_found_urls(db_config)
     requested_files_graph_data, requested_files = generate_plot_requested_files(db_config)
     graph_data_operating_systems, operating_systems = generate_plot_operating_systems(db_config)
+    graph_data_http_status_codes_by_category, status_codes_by_category = generate_plot_http_status_codes_by_category(db_config)
 
-
-    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences:
+    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category:
         return "Aucune donnée disponible pour le graphique."
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
@@ -374,6 +432,7 @@ def index():
                            graph_url_refences=graph_url_refences, urls=urls,graph_data_not_found=graph_data_not_found,
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
+                           graph_data_http_status_codes_by_category=graph_data_http_status_codes_by_category,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,

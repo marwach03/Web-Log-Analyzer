@@ -97,6 +97,11 @@
                 <h2>Total Hits par Système d'Exploitation</h2>
                 <img src="data:image/png;base64,{{ graph_data_operating_systems }}" alt="Graph OPERATING ">
             </div>
+
+            <div>
+                <h1>HTTP STATUS CODES</h1>
+                <img src="data:image/png;base64,{{ graph_data_http_status_codes_by_category }}" alt="Graph">
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">

@@ -51,6 +51,40 @@ class AccessDao:
         finally:
             cursor.close()
 
+    def fetch_http_status_codes_by_category(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = '''
+                SELECT 
+                    CASE 
+                        WHEN status BETWEEN 200 AND 299 THEN '2xx Success'
+                        WHEN status BETWEEN 300 AND 399 THEN '3xx Redirection'
+                        WHEN status BETWEEN 400 AND 499 THEN '4xx Client Errors'
+                        WHEN status BETWEEN 500 AND 599 THEN '5xx Server Errors'
+                        ELSE 'Other'
+                    END AS category,
+                    COUNT(*) AS hits,
+                    COUNT(DISTINCT ip) AS visitors
+                FROM 
+                    logs
+                GROUP BY 
+                    category
+                ORDER BY 
+                    category
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des HTTP status codes par catégorie: {e}")
+            return []
+        finally:
+            cursor.close()
+
     def fetch_unique_visitors_and_hits_per_day(self):
         if not self.connection:
             print("Pas de connexion a la base de donnees")
