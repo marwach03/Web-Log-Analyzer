@@ -571,10 +571,13 @@ def generate_plot_failed_login_attempts_by_ip(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'Ghitatagmouti2003',
+        'password': 'marwachaoui2003@',
         'database': 'webLog'
     }
 
+    if 'logged_in' not in session or not session['logged_in']:
+        return redirect(url_for('login'))
+    
     dao = AccessDao(db_config)
     dao.connect()
     total_requests = dao.fetch_total_requests()
@@ -603,7 +606,7 @@ def index():
     graph_data_ip_exceeding_connections=generate_plot_ip_exceeding_connections(db_config)
     graph_data_failed_login_attemptsIP = generate_plot_failed_login_attempts_by_ip(db_config)
     
-    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category or not graph_data_ip_exceeding_connections:
+    if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category or not graph_data_ip_exceeding_connections or not graph_data_failed_login_attemptsIP:
         return "Aucune donnée disponible pour le graphique."
 
     return render_template('graph.html', graph_data=graph_data, dates=dates,
@@ -627,7 +630,21 @@ def index():
                             requested_files = requested_files, graph_data_operating_systems=graph_data_operating_systems, 
                             operating_systems=operating_systems)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = user_dao.get_user_by_email(email)
+        if user and user[2] == password:  # Assurez-vous que le mot de passe est vérifié correctement
+            session['logged_in'] = True
+            session['email'] = email
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid email or password.')
+    return render_template('login.html')
 
+    
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
