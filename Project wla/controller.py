@@ -1,14 +1,25 @@
 import matplotlib
 matplotlib.use('Agg')  # Utiliser le backend non interactif
-from flask import Flask, render_template
-from dal import AccessDao, SSHLogDAO  # Assuming dal.py contains the AccessDao class for database access
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from dal import UserDao, AccessDao, SSHLogDAO  # Assuming dal.py contains the AccessDao class for database access
 import matplotlib.pyplot as plt
 import io
 import base64
 import numpy as np
 from datetime import datetime
+import hashlib
 
 app = Flask(__name__)
+app.secret_key = 'OOZIE09'  # Vous pouvez utiliser os.urandom(24) pour générer une clé aléatoire
+
+# Configuration de la base de données
+db_config = {
+    'user': 'root',
+    'password': 'ikramBelhaj2003@',
+    'database': 'webLog'
+}
+
+user_dao = UserDao(db_config)
 
 def get_current_datetime():
     now = datetime.now()
@@ -615,6 +626,21 @@ def index():
                             requested_files_graph_data=requested_files_graph_data,
                             requested_files = requested_files, graph_data_operating_systems=graph_data_operating_systems, 
                             operating_systems=operating_systems)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        if user_dao.get_user_by_email(email):
+            flash('Email already exists, please choose another one.')
+        else:
+            user_dao.insert_user(email, password)
+            flash('Registration successful, you can now log in.')
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
