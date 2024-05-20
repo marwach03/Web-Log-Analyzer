@@ -5,6 +5,7 @@ from dal import AccessDao  # Assuming dal.py contains the AccessDao class for da
 import matplotlib.pyplot as plt
 import io
 import base64
+import numpy as np
 from datetime import datetime
 
 app = Flask(__name__)
@@ -23,7 +24,7 @@ def generate_plot_static_requests(db_config):
     dao.disconnect()
 
     if not data:
-        print("Aucune donnée disponible pour le graphique des requêtes statiques.")
+        print("Aucune donnée disponible pour le graphique.")
         return None, None
 
     requests = [entry['request'] for entry in data]
@@ -32,21 +33,36 @@ def generate_plot_static_requests(db_config):
 
     fig, ax1 = plt.subplots(figsize=(10, 7))
 
-    ax1.bar(requests, visitors, color='b', label='Visitors')
+    # Largeur des barres
+    bar_width = 0.35
+
+    # Positions des barres pour les visiteurs et les hits
+    bar_positions_visitors = np.arange(len(requests))
+    bar_positions_hits = bar_positions_visitors + bar_width
+
+    # Barres pour les visiteurs
+    ax1.bar(bar_positions_visitors, visitors, bar_width, color='b', label='Visitors')
     ax1.set_xlabel('Request')
     ax1.set_ylabel('Visitors', color='b')
     ax1.tick_params(axis='y', labelcolor='b')
+    ax1.set_xticks(bar_positions_visitors + bar_width / 2)
     ax1.set_xticklabels(requests, rotation=90)
 
+    # Création d'un deuxième axe y partageant le même axe x
     ax2 = ax1.twinx()
-    ax2.bar(requests, hits, color='r', label='Hits')
+    ax2.bar(bar_positions_hits, hits, bar_width, color='r', label='Hits')
     ax2.set_ylabel('Hits', color='r')
     ax2.tick_params(axis='y', labelcolor='r')
 
-    plt.title('Top Static Requests Sorted by Hits and Visitors')
-    fig.tight_layout()
+    # Ajout de la légende
     fig.legend(loc='upper left')
 
+    plt.title('Top Static Requests Sorted by Hits and Visitors')
+
+    # Ajustement automatique des marges
+    fig.tight_layout()
+
+    # Sauvegarde du graphique dans un buffer
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
@@ -228,7 +244,7 @@ def generate_plot_not_found_urls(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'abdellah2004.7',
+        'password': 'Ghitatagmouti2003',
         'database': 'webLog'
     }
 
