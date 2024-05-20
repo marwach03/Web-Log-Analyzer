@@ -551,8 +551,44 @@ class AccessDao:
         finally:
             cursor.close()
 
+class SSHLogDAO:
+    def __init__(self, db_config):
+        self.db_config = db_config
 
+    def connect(self):
+        self.conn = mysql.connector.connect(**self.db_config)
+        self.cursor = self.conn.cursor()
 
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
+    def get_failed_login_attempts_by_date(self):
+        query = '''
+            SELECT DATE(date) as log_date, COUNT(*) as failed_attempts
+            FROM ssh_logs
+            WHERE message LIKE '%Failed password%'
+            GROUP BY log_date
+            ORDER BY log_date;
+        '''
+        self.connect()
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        self.close()
+        return results
     
 
+if __name__ == "__main__":
+    """ db_config = {
+        'user': 'root',
+        'password': 'marwachaoui2003@',
+        'host': 'localhost',
+        'database': 'webLog'
+    }
 
+    ssh_log_dao = SSHLogDAO(db_config)
+
+    results = ssh_log_dao.get_failed_login_attempts_by_date()
+    
+    for log_date, failed_attempts in results:
+        print(f"Date: {log_date}, Failed Attempts: {failed_attempts}") """

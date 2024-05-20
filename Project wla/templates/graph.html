@@ -99,8 +99,14 @@
             </div>
 
             <div>
-                <h1>HTTP STATUS CODES</h1>
+                <h2>HTTP status codes</h2>
                 <img src="data:image/png;base64,{{ graph_data_http_status_codes_by_category }}" alt="Graph">
+            </div>
+
+            <h1>SSH LOG ESISA</h1>
+            <div>
+                <h2>Nombre de tentative de connection échouées par période </h2>
+                <img src="data:image/png;base64,{{ graph_data_failed_login_attempts }}" alt="Graphe tentative de connection échouées par période">
             </div>
         </div>
         <div class="navbar">

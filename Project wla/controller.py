@@ -1,7 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')  # Utiliser le backend non interactif
 from flask import Flask, render_template
-from dal import AccessDao  # Assuming dal.py contains the AccessDao class for database access
+from dal import AccessDao, SSHLogDAO  # Assuming dal.py contains the AccessDao class for database access
 import matplotlib.pyplot as plt
 import io
 import base64
@@ -391,12 +391,38 @@ def generate_plot_operating_systems(db_config):
 
     return graph_data, operating_systems
 
+def generate_plot_failed_login_attempts(db_config):
+    ssh_log_dao = SSHLogDAO(db_config)
+    results = ssh_log_dao.get_failed_login_attempts_by_date()
+
+    if not results:
+        print("Aucune donnée disponible pour le graphique des tentatives de connexion échouées.")
+        return None
+
+    dates = [result[0] for result in results]
+    failed_attempts = [result[1] for result in results]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(dates, failed_attempts, marker='o', color='r')
+    plt.xlabel('Date')
+    plt.ylabel('Nombre de tentatives échouées')
+    plt.title('Tentatives de connexion échouées par date')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data
 
 @app.route('/')
 def index():
     db_config = {
         'user': 'root',
-        'password': 'abdellah2004.7',
+        'password': 'marwachaoui2003@',
         'database': 'webLog'
     }
 
@@ -422,6 +448,7 @@ def index():
     requested_files_graph_data, requested_files = generate_plot_requested_files(db_config)
     graph_data_operating_systems, operating_systems = generate_plot_operating_systems(db_config)
     graph_data_http_status_codes_by_category, status_codes_by_category = generate_plot_http_status_codes_by_category(db_config)
+    graph_data_failed_login_attempts = generate_plot_failed_login_attempts(db_config)
 
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category:
         return "Aucune donnée disponible pour le graphique."
@@ -433,6 +460,8 @@ def index():
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
                            graph_data_http_status_codes_by_category=graph_data_http_status_codes_by_category,
+                           status_codes_by_category=status_codes_by_category,
+                           graph_data_failed_login_attempts=graph_data_failed_login_attempts,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,
