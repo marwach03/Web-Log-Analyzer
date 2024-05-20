@@ -605,11 +605,46 @@ class SSHLogDAO:
         self.close()
         return results
 
+    def get_ips_exceeding_max_connections(self):
+        try:
+            # Requête SQL pour récupérer les IPs dépassant le nombre maximum de connexions (10)
+            query = '''
+                    SELECT 
+                        ip,
+                        COUNT(*) as connection_attempts
+                    FROM 
+                        ssh_logs
+                    GROUP BY 
+                        ip
+                    HAVING 
+                        connection_attempts > 10000
+                    ORDER BY 
+                        connection_attempts DESC;
+                    '''
+            self.connect()
+            self.cursor.execute(query)
+            results = self.cursor.fetchall()
+
+            # Formatage des résultats en une liste de dictionnaires
+            formatted_results = []
+            for row in results:
+                ip = row[0]
+                connection_attempts = int(row[1])  # Assurez-vous que connection_attempts est un entier
+                if ip is not None:
+                    formatted_results.append({'ip': ip, 'connection_attempts': connection_attempts})
+
+            self.close()
+
+            return formatted_results
+        except Error as e:
+            print(f"Erreur lors de la récupération des données: {e}")
+        return []
+
 
 if __name__ == "__main__":
     """ db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'abdellah2004.7',
         'host': 'localhost',
         'database': 'webLog'
     }
