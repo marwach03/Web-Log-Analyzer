@@ -83,7 +83,7 @@ if __name__ == "__main__":
     log_file_path = './apache/var/log/httpd/access_log'  # Chemin vers votre fichier de journal
     db_config = {
         'user': 'root',
-        'password': 'ikramBelhaj2003@',
+        'password': 'abdellah2004.7',
         'database': 'webLog'
     }
 

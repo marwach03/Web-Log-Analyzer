@@ -293,11 +293,52 @@ def generate_plot_not_found_urls(db_config):
 
     return graph_data_not_found
 
+def generate_plot_operating_systems(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_operating_systems_stats()
+    dao.disconnect()
+
+    if not data:
+        print("Aucune donnée disponible pour le graphique des systèmes d'exploitation.")
+        return None, None
+
+    operating_systems = [entry['operating_system'] for entry in data]
+    hits = [entry['hits'] for entry in data]
+    visitors = [entry['visitors'] for entry in data]
+
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+
+    ax1.bar(operating_systems, visitors, color='b', label='Visitors')
+    ax1.set_xlabel('Operating System')
+    ax1.set_ylabel('Visitors', color='b')
+    ax1.tick_params(axis='y', labelcolor='b')
+    ax1.set_xticklabels(operating_systems, rotation=90)
+
+    ax2 = ax1.twinx()
+    ax2.bar(operating_systems, hits, color='r', label='Hits')
+    ax2.set_ylabel('Hits', color='r')
+    ax2.tick_params(axis='y', labelcolor='r')
+
+    plt.title('Hits et Visitors par Système d\'Exploitation')
+    fig.tight_layout()
+    fig.legend(loc='upper left')
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, operating_systems
+
+
 @app.route('/')
 def index():
     db_config = {
         'user': 'root',
-        'password': 'ikramBelhaj2003@',
+        'password': 'abdellah2004.7',
         'database': 'webLog'
     }
 
@@ -321,6 +362,9 @@ def index():
     graph_data_static_requests, requests = generate_plot_static_requests(db_config)
     graph_data_not_found = generate_plot_not_found_urls(db_config)
     requested_files_graph_data, requested_files = generate_plot_requested_files(db_config)
+    graph_data_operating_systems, operating_systems = generate_plot_operating_systems(db_config)
+
+
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences:
         return "Aucune donnée disponible pour le graphique."
 
@@ -335,7 +379,8 @@ def index():
                            referrers_count=referrers_count, not_found_count=not_found_count,
                            static_files_count=static_files_count, log_size=log_size,
                             requested_files_graph_data=requested_files_graph_data,
-                            requested_files = requested_files_graph_data)
+                            requested_files = requested_files, graph_data_operating_systems=graph_data_operating_systems, 
+                            operating_systems=operating_systems)
 
 if __name__ == '__main__':
     app.run(debug=True)

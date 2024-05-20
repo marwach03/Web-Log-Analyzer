@@ -5,10 +5,12 @@ class AccessDao:
     def __init__(self, db_config):
         self.db_config = db_config
         self.connection = None
+        self.cursor = None
 
     def connect(self):
         try:
             self.connection = mysql.connector.connect(**self.db_config)
+            self.cursor = self.connection.cursor(dictionary=True)
             print("Connexion a la base de donnees reussie")
         except Error as e:
             print(f"Erreur de connexion à la base de donnees: {e}")
@@ -16,6 +18,7 @@ class AccessDao:
 
     def disconnect(self):
         if self.connection:
+            self.cursor.close() 
             self.connection.close()
             print("Deconnexion de la base de donnees reussie")
     
@@ -473,6 +476,44 @@ class AccessDao:
         except Error as e:
             print(f"Erreur lors de la récupération des fichiers demandés: {e}")
             return []
+        finally:
+            cursor.close()
+            
+
+    
+    def fetch_operating_systems_stats(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []  # Retourner une liste vide en cas d'erreur de connexion
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = """
+                    SELECT 
+                        CASE 
+                            WHEN user_agent LIKE '%Windows%' THEN 'Windows'
+                            WHEN user_agent LIKE '%Linux%' THEN 'Linux'
+                            WHEN user_agent LIKE '%Android%' THEN 'Android'
+                            WHEN user_agent LIKE '%iOS%' THEN 'iOS'
+                            WHEN user_agent LIKE '%Mac%' THEN 'macOS'
+                            WHEN user_agent LIKE '%Chrome OS%' THEN 'Chrome OS'
+                            ELSE 'Crawlers or Unknown'
+                        END as operating_system,
+                        COUNT(*) as hits,
+                        COUNT(DISTINCT ip) as visitors
+                    FROM 
+                        logs
+                    GROUP BY 
+                        operating_system
+                    ORDER BY 
+                        hits DESC;
+                    """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return [{'operating_system': row['operating_system'], 'hits': row['hits'], 'visitors': row['visitors']} for row in result]
+        except Error as e:
+            print(f"Erreur lors de la récupération des données des Operation System: {e}")
+            return []  # Retourner une liste vide en cas d'erreur lors de la récupération des données
         finally:
             cursor.close()
 

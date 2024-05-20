@@ -92,6 +92,11 @@
                 <h2>Top Requested Files Sorted by Hits</h2>
                 <img src="data:image/png;base64,{{ requested_files_graph_data }}" alt="Graph Static Requests">
             </div>
+
+            <div>
+                <h2>Total Hits par Système d'Exploitation</h2>
+                <img src="data:image/png;base64,{{ graph_data_operating_systems }}" alt="Graph OPERATING ">
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">
