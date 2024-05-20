@@ -590,7 +590,20 @@ class SSHLogDAO:
         results = self.cursor.fetchall()
         self.close()
         return results
-    
+    def get_failed_login_attempts_by_Mounth(self):
+        query = '''
+         SELECT DATE_FORMAT(date, '%Y-%m ') AS log_Mounth,
+       COUNT(*) AS failed_attempts
+        FROM ssh_logs
+        WHERE message LIKE '%Failed password%'
+        GROUP BY log_Mounth
+        ORDER BY log_Mounth;
+    '''
+        self.connect()
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        self.close()
+        return results
 
 
 if __name__ == "__main__":

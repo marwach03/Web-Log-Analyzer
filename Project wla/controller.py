@@ -447,6 +447,35 @@ def generate_plot_failed_login_attempts_per_Hour(db_config):
     plt.close()
 
     return graph_data
+def generate_plot_failed_login_attempts_per_Mounth(db_config):
+    ssh_log_dao = SSHLogDAO(db_config)
+    results = ssh_log_dao.get_failed_login_attempts_by_Mounth()
+
+    if not results:
+        print("Aucune donnée disponible pour le graphique des tentatives de connexion échouées.")
+        return None
+
+    # Extraction des dates et des tentatives échouées à partir des résultats
+    dates = [result[0] for result in results]
+    failed_attempts = [result[1] for result in results]
+
+    # Tracé des données
+    plt.figure(figsize=(10, 5))
+    plt.plot(dates, failed_attempts, marker='o', color='r')
+    plt.xlabel('Mois')
+    plt.ylabel('Nombre de tentatives échouées')
+    plt.title('Tentatives de connexion échouées par Mois')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Conversion du graphique en format base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data
 @app.route('/')
 def index():
     db_config = {
@@ -479,6 +508,7 @@ def index():
     graph_data_http_status_codes_by_category, status_codes_by_category = generate_plot_http_status_codes_by_category(db_config)
     graph_data_failed_login_attempts = generate_plot_failed_login_attempts(db_config)
     graph_data_failed_login_attempts_perHour = generate_plot_failed_login_attempts_per_Hour(db_config)
+    graph_data_failed_login_attempts_perMounth = generate_plot_failed_login_attempts_per_Mounth(db_config)
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences or not graph_data_http_status_codes_by_category:
         return "Aucune donnée disponible pour le graphique."
 
@@ -492,6 +522,7 @@ def index():
                            status_codes_by_category=status_codes_by_category,
                            graph_data_failed_login_attempts=graph_data_failed_login_attempts,
                            graph_data_failed_login_attempts_perHour = graph_data_failed_login_attempts_perHour,
+                           graph_data_failed_login_attempts_perMounth = graph_data_failed_login_attempts_perMounth,
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,

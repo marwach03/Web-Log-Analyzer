@@ -114,6 +114,10 @@
                 <h2>Nombre de tentative de connection échouées par Heure</h2>
                 <img src="data:image/png;base64,{{ graph_data_failed_login_attempts_perHour }}" alt="Graphe tentative de connection échouées par Heure">
             </div>
+            <div id="failed-connection-Mounth">
+                <h2>Nombre de tentative de connection échouées par Mois</h2>
+                <img src="data:image/png;base64,{{ graph_data_failed_login_attempts_perMounth }}" alt="Graphe tentative de connection échouées par Mois">
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">
