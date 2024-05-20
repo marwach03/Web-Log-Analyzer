@@ -15,7 +15,60 @@ def get_current_datetime():
     date_str = now.strftime("%d/%b/%Y")
     datetime_str = now.strftime("%Y-%m-%d %H:%M:%S")
     return date_str, datetime_str
+def generate_plot_requested_files(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    
+    data = dao.fetch_requested_files()
+    dao.disconnect()
 
+    if not data:
+        print("Aucune donnée disponible pour le graphique.")
+        return None, None
+
+    requests = [entry['request'] for entry in data]
+    hits = [entry['hits'] for entry in data]
+    visitors = [entry['visitors'] for entry in data]
+
+    fig, ax1 = plt.subplots(figsize=(10, 7))
+
+    # Largeur des barres
+    bar_width = 0.35
+
+    # Positions des barres pour les visiteurs et les hits
+    bar_positions_visitors = np.arange(len(requests))
+    bar_positions_hits = bar_positions_visitors + bar_width
+
+    # Barres pour les visiteurs
+    ax1.bar(bar_positions_visitors, visitors, bar_width, color='b', label='Visitors')
+    ax1.set_xlabel('Requested Files (URLs)')
+    ax1.set_ylabel('Visitors', color='b')
+    ax1.tick_params(axis='y', labelcolor='b')
+    ax1.set_xticks(bar_positions_visitors + bar_width / 2)
+    ax1.set_xticklabels(requests, rotation=90)
+
+    # Création d'un deuxième axe y partageant le même axe x
+    ax2 = ax1.twinx()
+    ax2.bar(bar_positions_hits, hits, bar_width, color='r', label='Hits')
+    ax2.set_ylabel('Hits', color='r')
+    ax2.tick_params(axis='y', labelcolor='r')
+
+    # Ajout de la légende
+    fig.legend(loc='upper left')
+
+    plt.title('Top Requested Files (URLs) Sorted by Hits and Visitors')
+
+    # Ajustement automatique des marges
+    fig.tight_layout()
+
+    # Sauvegarde du graphique dans un buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data, requests
 def generate_plot_static_requests(db_config):
     dao = AccessDao(db_config)
     dao.connect()
@@ -244,7 +297,7 @@ def generate_plot_not_found_urls(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'ikramBelhaj2003@',
         'database': 'webLog'
     }
 
@@ -267,7 +320,7 @@ def index():
     graph_url_refences, urls = generate_plotReferrerUrls(db_config)
     graph_data_static_requests, requests = generate_plot_static_requests(db_config)
     graph_data_not_found = generate_plot_not_found_urls(db_config)
-
+    requested_files_graph_data, requested_files = generate_plot_requested_files(db_config)
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences:
         return "Aucune donnée disponible pour le graphique."
 
@@ -280,7 +333,9 @@ def index():
                            unique_visitors_count=unique_visitors_count, 
                            requested_files_count=requested_files_count,
                            referrers_count=referrers_count, not_found_count=not_found_count,
-                           static_files_count=static_files_count, log_size=log_size)
+                           static_files_count=static_files_count, log_size=log_size,
+                            requested_files_graph_data=requested_files_graph_data,
+                            requested_files = requested_files_graph_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

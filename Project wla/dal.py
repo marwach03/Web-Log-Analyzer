@@ -447,6 +447,34 @@ class AccessDao:
             return []  # Retourner une liste vide en cas d'erreur lors de la récupération des données
         finally:
             cursor.close()
+    def fetch_requested_files(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = '''
+                SELECT 
+                    url AS request,
+                    COUNT(*) AS hits,
+                    COUNT(DISTINCT ip) AS visitors
+                FROM 
+                    logs
+                GROUP BY 
+                    url
+                ORDER BY 
+                    hits DESC
+                LIMIT 10
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des fichiers demandés: {e}")
+            return []
+        finally:
+            cursor.close()
 
 
 
