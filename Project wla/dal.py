@@ -617,7 +617,7 @@ class SSHLogDAO:
                     GROUP BY 
                         ip
                     HAVING 
-                        connection_attempts > 10000
+                        connection_attempts > 350
                     ORDER BY 
                         connection_attempts DESC;
                     '''

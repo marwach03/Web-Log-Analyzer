@@ -504,8 +504,8 @@ def generate_plot_ip_exceeding_connections(db_config):
     plt.bar(ips, connection_attempts, color='b')
     plt.xlabel('IP')
     plt.ylabel('Nombre de tentatives de connexion')
-    plt.title('IPs dépassant 10000 tentatives de connexion')
-    plt.xticks(rotation=45)
+    plt.title('IPs dépassant 350 tentatives de connexion')
+    plt.xticks(rotation=90)
     plt.tight_layout()
 
     buffer = io.BytesIO()
