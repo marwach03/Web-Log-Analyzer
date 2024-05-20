@@ -15,7 +15,8 @@
             <h1 class="titre1">Dashboard</h1>
         </div>
         <div class="panelBody">
-            <span>OVERALL ANALYZED REQUESTS</span><br>
+            <div id = "overall-analyzed-requests">
+                <span>OVERALL ANALYZED REQUESTS</span><br>
             <span class="intervalDate">12/MAY/2024 _ {{ today }}</span>
             <div class="update">
                 <span>Last Updated : {{ last_updated }}</span>
@@ -63,52 +64,53 @@
                     <span>{{ log_size }} MiB</span>
                 </div>
             </div>
-            <h1>Unique Visitors and Total Hits Per Day</h1>
+            </div>
+            <h1 id="unique-visitors">Unique Visitors and Total Hits Per Day</h1>
             <div>
                 <img src="data:image/png;base64,{{ graph_data }}" alt="Graph">
             </div>
 
-            <h1>Distribution dans le temps</h1>
+            <h1 id="time-distribution">Distribution dans le temps</h1>
             <div>
                 <img src="data:image/png;base64,{{ graph_data_time_distribution }}" alt="Graph Time Distribution">
             </div>
             
-            <div class="referrers-section">
+            <div id="">
                 <h1>Top Referrer URLs</h1>
-               <img src="data:image/png;base64,{{ graph_url_refences }}" alt="graph_url_refences">
+                <img src="data:image/png;base64,{{ graph_url_refences }}" alt="graph_url_refences">
             </div>
 
-            <div>
+            <div id="static-requests">
                 <h1>Top Static Requests Sorted by Hits</h1>
                 <img src="data:image/png;base64,{{ graph_data_static_requests }}" alt="Graph Static Requests">
             </div>
 
-            <div>
+            <div id="not-found-urls">
                 <h1>Top URLs Not Found</h1>
                 <img src="data:image/png;base64,{{ graph_data_not_found }}" alt="Graph">
-            
             </div>
-            <div>
+            <div id="requested-files">
                 <h2>Top Requested Files Sorted by Hits</h2>
                 <img src="data:image/png;base64,{{ requested_files_graph_data }}" alt="Graph Static Requests">
             </div>
 
-            <div>
+            <div id="operating-systems">
                 <h2>Total Hits par Système d'Exploitation</h2>
                 <img src="data:image/png;base64,{{ graph_data_operating_systems }}" alt="Graph OPERATING ">
             </div>
 
-            <div>
+            <div id="http-status-codes">
                 <h2>HTTP status codes</h2>
                 <img src="data:image/png;base64,{{ graph_data_http_status_codes_by_category }}" alt="Graph">
             </div>
 
             <h1>SSH LOG ESISA</h1>
-            <div>
+            <div id="failed-connection-period">
                 <h2>Nombre de tentative de connection échouées par période </h2>
                 <img src="data:image/png;base64,{{ graph_data_failed_login_attempts }}" alt="Graphe tentative de connection échouées par période">
             </div>
-            <div>
+
+            <div id="failed-connection-hour">
                 <h2>Nombre de tentative de connection échouées par Heure</h2>
                 <img src="data:image/png;base64,{{ graph_data_failed_login_attempts_perHour }}" alt="Graphe tentative de connection échouées par Heure">
             </div>
@@ -117,16 +119,18 @@
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">
             <img src="{{ url_for('static', filename='img/paraIcone.png') }}" class="para-icon" id="para-icon">
             <ul class="menu" id="menu">
-                <li><a href="#">UNIQUE VISITORS PER DAY - INCLUDING SPIDERS</a></li>
-                <li><a href="#">OVERALL ANALYZED REQUESTS</a></li>
-                <li><a href="#">REQUESTED FILES (URLS)</a></li>
-                <li><a href="#">STATIC REQUESTS</a></li>
-                <li><a href="#">NOT FOUND URLS</a></li>
-                <li><a href="#">VISITOR HOSTNAMES AND IPS</a></li>
+                <li><a href="#unique-visitors">UNIQUE VISITORS PER DAY - INCLUDING SPIDERS</a></li>
+                <li><a href="#overall-analyzed-requests">OVERALL ANALYZED REQUESTS</a></li>
+                <li><a href="#requested-files">REQUESTED FILES (URLS)</a></li>
+                <li><a href="#static-requests">STATIC REQUESTS</a></li>
+                <li><a href="#not-found-urls">NOT FOUND URLS</a></li>
+                <li><a href="#time-distribution">TIME DISTRIBUTION</a></li>
                 <li><a href="#">GEO LOCATION</a></li>
-                <li><a href="#">HTTP STATUS CODES</a></li>
-                <li><a href="#">OPERATING SYSTEMS</a></li>
+                <li><a href="#http-status-codes">ooHTTP STATUS CODES</a></li>
+                <li><a href="#operating-systems">OPERATING SYSTEMS</a></li>
                 <li><a href="#">BROWSERS</a></li>
+                <li><a href="#failed-connection-period">FAILLED CONNECTION PER PERIOD</a></li>
+                <li><a href="#failed-connection-hour">FAILLED TENTATIVE CONNECTION PER HOUR</a></li>
             </ul>
         </div>
     </div>
