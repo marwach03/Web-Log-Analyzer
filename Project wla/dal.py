@@ -401,6 +401,53 @@ class AccessDao:
             return []
         finally:
             cursor.close()
+    def fetch_top_not_found_urls(self, limit=10):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = f'''
+                SELECT url, COUNT(*) AS hits
+                FROM logs
+                WHERE status = 404
+                GROUP BY url
+                ORDER BY hits DESC
+                LIMIT {limit}
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des URLs non trouvées : {e}")
+            return []
+        finally:
+            cursor.close()
+    def fetch_not_found_data(self):
+        if not self.connection:
+            print("Pas de connexion à la base de données")
+            return []  # Retourner une liste vide en cas d'erreur de connexion
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            query = '''
+                SELECT url, COUNT(*) AS hits
+                FROM logs
+                WHERE status = 404
+                GROUP BY url
+                ORDER BY hits DESC
+                LIMIT 10
+            '''
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results
+        except Error as e:
+            print(f"Erreur lors de la récupération des données des URLs not found : {e}")
+            return []  # Retourner une liste vide en cas d'erreur lors de la récupération des données
+        finally:
+            cursor.close()
+
 
 
     

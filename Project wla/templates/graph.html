@@ -81,6 +81,12 @@
                 <h1>Top Static Requests Sorted by Hits</h1>
                 <img src="data:image/png;base64,{{ graph_data_static_requests }}" alt="Graph Static Requests">
             </div>
+
+            <div>
+                <h1>Top URLs Not Found</h1>
+                <img src="data:image/png;base64,{{ graph_data_not_found }}" alt="Graph">
+            
+            </div>
         </div>
         <div class="navbar">
             <img src="{{ url_for('static', filename='img/iconeMenu.png') }}" alt="Menu Icon" class="menu-icon" id="menu-icon">

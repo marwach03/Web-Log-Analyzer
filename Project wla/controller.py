@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')  # Utiliser le backend non interactif
 from flask import Flask, render_template
 from dal import AccessDao  # Assuming dal.py contains the AccessDao class for database access
 import matplotlib.pyplot as plt
@@ -194,11 +196,39 @@ def generate_plot_time_distribution(db_config):
 
     return graph_data
 
+def generate_plot_not_found_urls(db_config):
+    dao = AccessDao(db_config)
+    dao.connect()
+    not_found_data = dao.fetch_not_found_data()
+    dao.disconnect()
+    if not not_found_data:
+        print("Aucune donnée disponible pour les URLs non trouvées.")
+        return None, None
+
+    urls = [entry['url'] for entry in not_found_data]
+    hits = [entry['hits'] for entry in not_found_data]
+
+    plt.figure(figsize=(8, 6))
+    plt.bar(urls, hits, color='blue')
+    plt.xlabel('URLs')
+    plt.ylabel('Nombre de Hits')
+    plt.title('Top URLs Non Trouvées')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    graph_data_not_found = base64.b64encode(buffer.read()).decode()
+    plt.close()
+
+    return graph_data_not_found
+
 @app.route('/')
 def index():
     db_config = {
         'user': 'root',
-        'password': 'ikramBelhaj2003@',
+        'password': 'abdellah2004.7',
         'database': 'webLog'
     }
 
@@ -220,6 +250,7 @@ def index():
     graph_data_time_distribution = generate_plot_time_distribution(db_config)
     graph_url_refences, urls = generate_plotReferrerUrls(db_config)
     graph_data_static_requests, requests = generate_plot_static_requests(db_config)
+    graph_data_not_found = generate_plot_not_found_urls(db_config)
 
     if not graph_data or not graph_data_time_distribution or not graph_data_static_requests or not graph_url_refences:
         return "Aucune donnée disponible pour le graphique."
@@ -227,7 +258,7 @@ def index():
     return render_template('graph.html', graph_data=graph_data, dates=dates,
                            graph_data_static_requests=graph_data_static_requests,
                            requests=requests, graph_data_time_distribution=graph_data_time_distribution,
-                           graph_url_refences=graph_url_refences, urls=urls,
+                           graph_url_refences=graph_url_refences, urls=urls,graph_data_not_found=graph_data_not_found,
                            total_requests=total_requests, valid_requests=valid_requests,
                            failed_requests=failed_requests, log_parsing_time=log_parsing_time,
                            unique_visitors_count=unique_visitors_count, 
