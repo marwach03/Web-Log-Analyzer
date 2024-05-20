@@ -244,7 +244,7 @@ def generate_plot_not_found_urls(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'Ghitatagmouti2003',
+        'password': 'marwachaoui2003@',
         'database': 'webLog'
     }
 

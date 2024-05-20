@@ -9,10 +9,10 @@ body {
     color: #fff;
     display: flex;
     flex-direction: column; 
-    margin-top: -3000px;
+    margin-top: -3585px;
     align-items: flex-start; 
     width: 70px; 
-    height: 2000px; 
+    height: 4000px; 
 }
 
 .menu {
@@ -57,8 +57,8 @@ body {
 }
 .panel{
     background-color: rgb(214, 220, 226);
-    width: 1300px;
-    height: 2000px;
+    width: 1250px;
+    height: auto;
     margin-top: -50px;
 }
 
@@ -162,6 +162,16 @@ body {
     background-color: white;
     border-top: 5px solid #000;
 }
+
+
+/* style.css */
+.stats {
+    display: flex;
+    flex-wrap: wrap; /* Permet de passer à la ligne suivante si plus de 5 éléments */
+    gap: 10px; /* Espace entre les éléments */
+    justify-content: space-between; /* Espace entre les éléments */
+}
+
 
 .stat span:first-child {
     font-size: 14px;
