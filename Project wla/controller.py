@@ -15,7 +15,7 @@ app.secret_key = 'OOZIE09'  # Vous pouvez utiliser os.urandom(24) pour générer
 # Configuration de la base de données
 db_config = {
     'user': 'root',
-    'password': 'ikramBelhaj2003@',
+    'password': 'Ghitatagmouti2003',
     'database': 'webLog'
 }
 
@@ -571,7 +571,7 @@ def generate_plot_failed_login_attempts_by_ip(db_config):
 def index():
     db_config = {
         'user': 'root',
-        'password': 'marwachaoui2003@',
+        'password': 'Ghitatagmouti2003',
         'database': 'webLog'
     }
 
@@ -658,6 +658,11 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('email', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
